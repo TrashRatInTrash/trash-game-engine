@@ -1,22 +1,11 @@
 #!/bin/bash
 
-# compile and run a test file with the t-vector.c lib file
-
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <test_file>"
-    exit 1
-fi
-
-TEST_FILE=$1
-IMPL_FILE="t-vector.c"
-OUTPUT_EXECUTABLE="test_program.o"
-
-echo "Compiling $TEST_FILE and $IMPL_FILE..."
-gcc $TEST_FILE $IMPL_FILE -g -o $OUTPUT_EXECUTABLE
+echo "Compiling demo.c and library files..."
+gcc demo.c lib/T-engine.c lib/t-lib.c lib/t-vector.c -Ilib -I/usr/include/SDL2 -lSDL2 -lSDL2_ttf -o demo.o
 
 if [ $? -eq 0 ]; then
-    echo "Compilation successful. Running $OUTPUT_EXECUTABLE..."
-    ./$OUTPUT_EXECUTABLE
+    echo "Compilation successful. Running demo..."
+    ./demo
 else
     echo "Compilation failed. Please check for errors."
     exit 1
