@@ -27,9 +27,11 @@ struct dynArray_t *resize_Array(struct dynArray_t *p_varray) {
 
   struct dynArray_t *n_varray = create_Array(new_capacity);
   if (n_varray == NULL) {
+    printf("new array failed to create\n");
     return NULL;
   }
 
+  printf("copying data over\n");
   memcpy(n_varray->data, p_varray->data, sizeof(void *) * p_varray->ptr);
   n_varray->ptr = p_varray->ptr;
   free(p_varray->data);
@@ -74,4 +76,3 @@ void destroy_Array(struct dynArray_t *varray) {
     free(varray);
   }
 }
-

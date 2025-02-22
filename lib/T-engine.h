@@ -40,12 +40,6 @@ typedef struct {
   struct dynArray_t *things; // list of things
   int thing_count;           // nb of active things
 
-  // user input states
-  int key_up, key_down, key_left, key_right;
-  int mouse_x, mouse_y;
-  int mouse_button_pressed;
-  int quit_button_pressed;
-
   // custom hook for user-defined functions
   void (*on_update)(void *game, Thing *thing, float delta_time);
   void (*on_update_renderer)(void *game, Thing *thing);
@@ -53,8 +47,14 @@ typedef struct {
 
 typedef struct {
   struct dynArray_t *scenes; // vector storing all the game states
-  int state_count;
+  int scene_count;
   int active_state_i;
+
+  // user input states
+  int key_up, key_down, key_left, key_right;
+  int mouse_x, mouse_y;
+  int mouse_button_pressed;
+  int quit_button_pressed;
 
   SDL_Window *win;
   SDL_Renderer *renderer;
@@ -70,5 +70,11 @@ void destroy_Scene(Scene_t *game);
 Play_t *init_Play(int Win_Width, int Win_Height);
 Thing *add_thing(Scene_t *game, int x, int y, int width, int height, float vx,
                  float vy, int tid, int r, int g, int b, int a);
+int destroy_Thing(Scene_t *scene, int thing_index);
+void add_Scene_to_Play(Scene_t *scene, Play_t *play);
+
+void run_Play(Play_t *play);
+
+void set_Active_State(Play_t *play, Scene_t *scene);
 
 #endif // T_ENGINE_H

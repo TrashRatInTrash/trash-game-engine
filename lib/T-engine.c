@@ -52,19 +52,19 @@ Scene_t *init_Scene() {
   return scene;
 }
 
-void destroy_Scene(Scene_t *game) {
-  if (game == NULL) {
+void destroy_Scene(Scene_t *play) {
+  if (play == NULL) {
     return;
   }
 
-  for (size_t i = 0; i < game->things->ptr; i++) {
-    Thing *thing = get(game->things, i);
+  for (size_t i = 0; i < play->things->ptr; i++) {
+    Thing *thing = get(play->things, i);
     if (thing != NULL) {
       free(thing);
     }
   }
-  destroy_Array(game->things);
-  free(game);
+  destroy_Array(play->things);
+  free(play);
 }
 
 /*
@@ -78,9 +78,8 @@ Play_t *init_Play(int Win_Width, int Win_Height) {
 
   struct dynArray_t *scenes;
 
-  create_Array(3);
+  scenes = create_Array(3);
   play->scenes = scenes;
-  play->state_count = 0;
   play->active_state_i = -1;
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -111,34 +110,151 @@ Play_t *init_Play(int Win_Width, int Win_Height) {
   return play;
 }
 
-Thing *add_thing(Scene_t *game, int x, int y, int width, int height, float vx,
+void set_Active_State(Play_t *play, Scene_t *scene) {
+  play->active_state_i = scene->scene_ID;
+}
+
+void add_Scene_to_Play(Scene_t *scene, Play_t *play) {
+  append(&play->scenes, scene);
+  scene->scene_ID = play->scene_count++;
+
+}
+
+Thing *add_thing(Scene_t *scene, int x, int y, int width, int height, float vx,
                  float vy, int tid, int r, int g, int b, int a) {
 
-  Thing *obj = malloc_Thing();
+  Thing *thing = malloc_Thing();
 
-  if (obj == NULL) {
+  if (thing == NULL) {
     fprintf(stderr, "Failed to allocate memory for new Thing\n");
     return NULL;
   }
-  if (append(&game->things, obj) != 0) {
+  if (append(&scene->things, thing) != 0) {
     fprintf(stderr, "Failed to append new Thing to things array\n");
-    free(obj);
+    free(thing);
     return NULL;
   }
 
-  obj->id = game->things->ptr;
-  obj->type_id = tid;
-  obj->x = x;
-  obj->y = y;
-  obj->vx = vx;
-  obj->vy = vy;
-  obj->width = width;
-  obj->height = height;
-  obj->color[0] = r;
-  obj->color[1] = g;
-  obj->color[2] = b;
-  obj->color[3] = a;
-  // obj->poly = NULL;
+  thing->id = scene->things->ptr;
+  thing->type_id = tid;
+  thing->x = x;
+  thing->y = y;
+  thing->vx = vx;
+  thing->vy = vy;
+  thing->width = width;
+  thing->height = height;
+  thing->color[0] = r;
+  thing->color[1] = g;
+  thing->color[2] = b;
+  thing->color[3] = a;
+  thing->index = scene->things->ptr;
+  // thing->poly = NULL;
 
-  return obj;
+  return thing;
+}
+
+int destroy_Thing(Scene_t *scene, int thing_index) {
+
+  printf("destroying Thing at index: %d\n", thing_index);
+
+  // delete thing from index, swaps last element to its place then deletes
+  delete_at(scene->things, thing_index);
+  // update index of the moved thing (previously at end of array), to new index
+  Thing *moved_thing = get(scene->things, thing_index); //
+  moved_thing->index = thing_index;
+
+  return 0;
+}
+
+void draw_rectangle(SDL_Renderer *renderer, float x, float y, int width,
+                    int height, int color[4]) {
+  SDL_Rect rect;
+  rect.x = (int)x - width / 2;
+  rect.y = (int)y - height / 2;
+  rect.w = width;
+  rect.h = height;
+
+  SDL_SetRenderDrawColor(renderer, color[0], color[1], color[2], color[3]);
+  SDL_RenderFillRect(renderer, &rect);
+}
+
+void render_things(Scene_t *scene, SDL_Renderer *renderer) {
+
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_RenderClear(renderer);
+  for (int i = 0; i < scene->things->ptr; i++) {
+
+    Thing *thing = get(scene->things, i);
+
+    if (thing == NULL || thing->id == -1) {
+      continue;
+    }
+    // printf("drawing thingect of id: %d\n", thing->id);
+    draw_rectangle(renderer, thing->x, thing->y, thing->width, thing->height,
+                   thing->color);
+  }
+  SDL_RenderPresent(renderer);
+}
+
+void update_things(Scene_t *scene, float d_time) {
+  for (int i = 0; i < scene->things->ptr; i++) {
+    Thing *thing = get(scene->things, i);
+    thing->x += thing->vx * d_time;
+    thing->y += thing->vy * d_time;
+    if (scene->on_update) {
+      scene->on_update(scene, thing, d_time);
+    }
+  }
+}
+
+/* TODO LATER */
+void handle_input(Play_t *play) {
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+    if (event.type == SDL_QUIT) {
+      exit(0);
+    }
+
+    // printf("\n~~~~~~~~~~~~~~~~\nInputs:");
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
+    play->key_up = state[SDL_SCANCODE_UP] || state[SDL_SCANCODE_W];
+    // printf("key_up:%d\n", play->key_up);
+    play->key_down = state[SDL_SCANCODE_DOWN] || state[SDL_SCANCODE_S];
+    // printf("key_down:%d\n", play->key_down);
+    play->key_left = state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_A];
+    // printf("key_left:%d\n", play->key_left);
+    play->key_right = state[SDL_SCANCODE_RIGHT] || state[SDL_SCANCODE_D];
+    // printf("key_right:%d\n", play->key_right);
+    play->quit_button_pressed = state[SDL_SCANCODE_R];
+
+    if (event.type == SDL_MOUSEMOTION) {
+      play->mouse_x = event.motion.x;
+      play->mouse_y = event.motion.y;
+    }
+    if (event.type == SDL_MOUSEBUTTONDOWN) {
+      play->mouse_button_pressed = 1;
+    }
+    if (event.type == SDL_MOUSEBUTTONUP) {
+      play->mouse_button_pressed = 0;
+    }
+  }
+}
+
+void run_Play(Play_t *play) {
+  while (1) {
+    if (play->active_state_i < 0) {
+      return;
+    }
+    // printf("active state index: %d\n", play->active_state_i);
+    Scene_t *active_scene = get(play->scenes, play->active_state_i);
+    float delta_time = 0.016f;
+
+    // printf("active state id: %d\n", active_scene->scene_ID);
+
+    handle_input(play);
+    update_things(active_scene, delta_time);
+    render_things(active_scene, play->renderer);
+
+    SDL_Delay(16);
+  }
 }

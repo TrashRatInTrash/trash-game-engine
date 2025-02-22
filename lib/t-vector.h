@@ -1,15 +1,15 @@
 
 #ifndef DYNARRAY_H
 #define DYNARRAY_H
-#define RESIZE_CONSTANT 1.5
 
+#define RESIZE_CONSTANT 1.5
 
 #include <stddef.h>
 
 struct dynArray_t {
-    size_t capacity; // Maximum number of elements the array can hold
-    size_t ptr;      // Current number of elements in the array
-    void **data;     // Pointer to the array of void pointers
+  size_t capacity; // Maximum number of elements the array can hold
+  size_t ptr;      // Current number of elements in the array
+  void **data;     // Pointer to the array of void pointers
 };
 
 // Function prototypes
@@ -25,5 +25,6 @@ void *get(struct dynArray_t *varray, size_t index);
 void delete_at(struct dynArray_t *varray, size_t index);
 
 void destroy_Array(struct dynArray_t *varray);
+
 
 #endif // DYNARRAY_H
