@@ -1,6 +1,6 @@
+#include "T-engine.h"
 #include "t-lib.c"
 #include "t-vector.h"
-#include "T-engine.h"
 #include <SDL2/SDL_scancode.h>
 #include <time.h>
 #include <unistd.h>
@@ -36,7 +36,7 @@ Scene_t *init_Scene() {
 
   memset(scene, 0, sizeof(Scene_t));
 
-  scene->things = create_Array(10);
+  scene->things = create_Array(5);
 
   if (scene->things == NULL) {
     fprintf(stderr, "Failed to create things array\n");
@@ -45,15 +45,6 @@ Scene_t *init_Scene() {
   }
 
   scene->scene_ID = -1;
-
-  // Initialize the available_Indices array
-  scene->available_Indicies = create_Array(10); // Initial capacity of 10
-  if (scene->available_Indicies == NULL) {
-    fprintf(stderr, "Failed to create available_Indices array\n");
-    destroy_Array(scene->things);
-    free(scene);
-    return NULL;
-  }
 
   scene->on_update = NULL;
   scene->on_update_renderer = NULL;
@@ -72,10 +63,7 @@ void destroy_Scene(Scene_t *game) {
       free(thing);
     }
   }
-
   destroy_Array(game->things);
-  destroy_Array(game->available_Indicies);
-
   free(game);
 }
 
@@ -126,34 +114,19 @@ Play_t *init_Play(int Win_Width, int Win_Height) {
 Thing *add_thing(Scene_t *game, int x, int y, int width, int height, float vx,
                  float vy, int tid, int r, int g, int b, int a) {
 
-  size_t index;
-  if (game->available_Indicies->ptr > 0) {
-    index = (size_t)(uintptr_t)get(game->available_Indicies,
-                                   game->available_Indicies->ptr - 1);
-    delete_at(game->available_Indicies,
-              game->available_Indicies->ptr -
-                  1); 
-  } else {
-    index = game->things->ptr;
-  }
-
-  Thing *obj = get(game->things, index);
+  Thing *obj = malloc_Thing();
 
   if (obj == NULL) {
-    obj = malloc_Thing();
-    if (obj == NULL) {
-      fprintf(stderr, "Failed to allocate memory for new Thing\n");
-      return NULL;
-    }
-
-    if (append(&game->things, obj) != 0) {
-      fprintf(stderr, "Failed to append new Thing to things array\n");
-      free(obj);
-      return NULL;
-    }
+    fprintf(stderr, "Failed to allocate memory for new Thing\n");
+    return NULL;
+  }
+  if (append(&game->things, obj) != 0) {
+    fprintf(stderr, "Failed to append new Thing to things array\n");
+    free(obj);
+    return NULL;
   }
 
-  obj->id = index;
+  obj->id = game->things->ptr;
   obj->type_id = tid;
   obj->x = x;
   obj->y = y;

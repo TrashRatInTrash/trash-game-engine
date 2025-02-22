@@ -39,9 +39,6 @@ typedef struct {
   int scene_ID;
   struct dynArray_t *things; // list of things
   int thing_count;           // nb of active things
-  struct dynArray_t
-      *available_Indicies; // keep track of empty indices in **things
-  int av_i_count;          // nb of empty indices
 
   // user input states
   int key_up, key_down, key_left, key_right;
