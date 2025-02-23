@@ -1,10 +1,11 @@
-#include "lib/T-engine.h"
 
 /*
   test the object (Thing) management
   of the game engine.
   can add and remove dynamically
 */
+
+#include "lib/T-engine.h"
 
 void print_thing_ids(Scene_t *scene) {
   /*
