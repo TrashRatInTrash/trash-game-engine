@@ -1,5 +1,5 @@
 #include "T-engine.h"
-#include "t-lib.c"
+#include "t-lib.h"
 #include "t-vector.h"
 #include <SDL2/SDL_scancode.h>
 #include <time.h>
@@ -210,7 +210,6 @@ void update_things(Scene_t *scene, float d_time) {
   }
 }
 
-/* TODO LATER */
 void handle_input(Play_t *play) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {

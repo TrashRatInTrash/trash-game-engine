@@ -2,6 +2,7 @@
 #ifndef T_ENGINE_H
 #define T_ENGINE_H
 
+#include "t-lib.h"
 #include "t-vector.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_scancode.h>

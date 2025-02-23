@@ -15,7 +15,7 @@ LIBS="-Ilib -I/usr/include/SDL2 -lSDL2 -lSDL2_ttf"
 OUTPUT_EXECUTABLE=$2
 
 echo "Compiling $TEST_FILE ... "
-gcc $TEST_FILE lib/T-engine.c lib/t-lib.c lib/t-vector.c -Ilib -I/usr/include/SDL2 -lSDL2 -lSDL2_ttf -g -o $OUTPUT_EXECUTABLE
+gcc $TEST_FILE lib/T-engine.c lib/t-lib.c lib/t-vector.c -Ilib -I/usr/include/SDL2 -lSDL2 -lSDL2_ttf -lm -g -o $OUTPUT_EXECUTABLE
 
 if [ $? -eq 0 ]; then
     echo "Compilation successful Running $OUTPUT_EXECUTABLE..."

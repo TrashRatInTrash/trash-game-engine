@@ -29,9 +29,7 @@ void print_thing_ids(Scene_t *scene) {
   }
 }
 
-void player_Update(void *pscene, Thing *thing, float d_time) {
-
-  Scene_t *scene = (Scene_t *)pscene;
+void player_Update(Scene_t *scene, Thing *thing, float d_time) {
 
   if (play->key_up) {
     thing->vy = -500;
@@ -52,11 +50,26 @@ void player_Update(void *pscene, Thing *thing, float d_time) {
   }
 }
 
-void bullet_Update(void *pscene, Thing *thing, float d_time) {}
+void bullet_Update(Scene_t *scene, Thing *thing, float d_time) {}
 
-void zombie_Update(void *pscene, Thing *thing, float d_time) {}
+void zombie_Update(Scene_t *scene, Thing *thing, float d_time) {
 
-void update(void *scene, Thing *thing, float d_time) {
+  Thing *player = get(scene->things, 0);
+
+  float vx = player->x - thing->x;
+  float vy = player->y - thing->y;
+
+  normalize_Vector(&vx, &vy);
+
+  thing->vx = vx * 100;
+  thing->vy = vy * 100;
+  // printf("vx: %f vy: %f\n", thing->vx, thing->vy);
+}
+
+void update(void *pscene, Thing *thing, float d_time) {
+
+  Scene_t *scene = (Scene_t *)pscene;
+
   switch (thing->type_id) {
   case PLAYER_TYPE:
     player_Update(scene, thing, d_time);
@@ -87,7 +100,11 @@ int main() {
 
   set_Active_State(play, scene);
 
-  add_thing(scene, 100, 200, 50, 50, 0.0f, 0.0f, 1, 255, 0, 0, 255);
+  add_thing(scene, 100, 200, 10, 10, 0.0f, 0.0f, PLAYER_TYPE, 255, 0, 0, 255);
+  Thing *zombie =
+      add_thing(scene, 500, 500, 10, 10, 0.0f, 0.0f, ZOMBIE_TYPE, 255, 255, 0, 255);
+
+  print_thing_ids(scene);
 
   run_Play(play);
 
