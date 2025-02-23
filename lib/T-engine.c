@@ -117,7 +117,6 @@ void set_Active_State(Play_t *play, Scene_t *scene) {
 void add_Scene_to_Play(Scene_t *scene, Play_t *play) {
   append(&play->scenes, scene);
   scene->scene_ID = play->scene_count++;
-
 }
 
 Thing *add_thing(Scene_t *scene, int x, int y, int width, int height, float vx,
@@ -197,6 +196,10 @@ void render_things(Scene_t *scene, SDL_Renderer *renderer) {
 }
 
 void update_things(Scene_t *scene, float d_time) {
+  /*
+    go upto `ptr` only, empty void pointers
+    aren't set to NULL
+  */
   for (int i = 0; i < scene->things->ptr; i++) {
     Thing *thing = get(scene->things, i);
     thing->x += thing->vx * d_time;
