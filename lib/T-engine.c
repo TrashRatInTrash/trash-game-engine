@@ -195,6 +195,21 @@ void render_things(Scene_t *scene, SDL_Renderer *renderer) {
   SDL_RenderPresent(renderer);
 }
 
+int is_bounding_box_collision(Thing *a, Thing *b) {
+  return (a->x < b->x + b->width && a->x + a->width > b->x &&
+          a->y < b->y + b->height && a->y + a->height > b->y);
+}
+
+float calculate_distance_things(Thing *a, Thing *b) {
+
+  float distance = -1;
+
+  distance =
+      sqrt(((a->x - b->x) * (a->x - b->x)) + ((a->y - b->y) * (a->y - b->y)));
+
+  return distance;
+}
+
 void update_things(Scene_t *scene, float d_time) {
   /*
     go upto `ptr` only, empty void pointers

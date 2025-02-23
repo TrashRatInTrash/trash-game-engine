@@ -78,4 +78,8 @@ void run_Play(Play_t *play);
 
 void set_Active_State(Play_t *play, Scene_t *scene);
 
+float calculate_distance_things(Thing *a, Thing *b);
+
+int is_bounding_box_collision(Thing *a, Thing *b);
+
 #endif // T_ENGINE_H
