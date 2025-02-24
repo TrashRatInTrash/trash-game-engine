@@ -1,5 +1,4 @@
 #include "T-engine.h"
-#include "t-lib.h"
 #include "t-vector.h"
 #include <SDL2/SDL_scancode.h>
 #include <time.h>
@@ -22,6 +21,7 @@ Thing *malloc_Thing() {
   thing->width = 10;
   thing->height = 10;
   thing->index = -1;
+  thing->poly = NULL;
   thing->custom_Properties = NULL;
 
   return thing;
@@ -188,9 +188,32 @@ void render_things(Scene_t *scene, SDL_Renderer *renderer) {
     if (thing == NULL || thing->id == -1) {
       continue;
     }
-    // printf("drawing thingect of id: %d\n", thing->id);
-    draw_rectangle(renderer, thing->x, thing->y, thing->width, thing->height,
-                   thing->color);
+
+    if (thing->poly == NULL) {
+      draw_rectangle(renderer, thing->x, thing->y, thing->width, thing->height,
+                     thing->color);
+    } else {
+      thing->poly->center.x = thing->x;
+      thing->poly->center.y = thing->y;
+
+      // printf("polygon center: %f, %f\n", thing->poly->center.x,
+      //        thing->poly->center.y);
+
+      SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+      SDL_Color color = {.r = thing->color[0],
+                         .g = thing->color[1],
+                         .b = thing->color[1],
+                         .a = thing->color[3]};
+
+      draw_filled_polygon(thing->poly, color, renderer);
+
+      if (scene->on_update_renderer != NULL) {
+        scene->on_update_renderer(scene, thing);
+      } else {
+        printf("no user render func found\n");
+      }
+    }
   }
   SDL_RenderPresent(renderer);
 }

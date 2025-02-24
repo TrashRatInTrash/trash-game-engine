@@ -10,8 +10,6 @@ if [ "$#" -ne 2 ]; then
 fi
 
 TEST_FILE=$1
-IMPL_FILE="lib/t-vector.c lib/T-engine.c lib/t-lib.c"
-LIBS="-Ilib -I/usr/include/SDL2 -lSDL2 -lSDL2_ttf"
 OUTPUT_EXECUTABLE=$2
 
 echo "Compiling $TEST_FILE ... "

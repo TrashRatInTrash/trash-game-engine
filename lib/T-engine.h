@@ -20,6 +20,7 @@ typedef struct {
   float vx, vy;      // velocity
   int width, height; // also use for bounding box purposes
   int color[4];
+  Tpolygon *poly;
   int index; // index in object array, can't be same as ID else we have to
              // remove its references when deleting, and idk how yet
 
