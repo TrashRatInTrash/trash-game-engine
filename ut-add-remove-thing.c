@@ -14,7 +14,7 @@ void print_thing_ids(Scene_t *scene) {
   */
   printf("capacity = %d\n", (int)scene->things->capacity);
   for (int i = 0; i < scene->things->ptr; i++) {
-    Thing *thing = scene->things->data[i];
+    Thing_t *thing = scene->things->data[i];
     if (thing == NULL) {
       printf("NULL thing");
       continue;

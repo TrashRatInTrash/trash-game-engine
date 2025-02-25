@@ -5,6 +5,7 @@
   - zombie ai
   !- bullets
   - collisions
+  - polygons and rotation
 */
 
 #include "lib/T-engine.h"
@@ -19,7 +20,7 @@ Play_t *play;
 void print_thing_ids(Scene_t *scene) {
   printf("capacity = %d\n", (int)scene->things->capacity);
   for (int i = 0; i < scene->things->ptr; i++) {
-    Thing *thing = scene->things->data[i];
+    Thing_t *thing = scene->things->data[i];
     if (thing == NULL) {
       printf("NULL thing");
       continue;
@@ -28,7 +29,7 @@ void print_thing_ids(Scene_t *scene) {
   }
 }
 
-void player_Update(Scene_t *scene, Thing *thing, float d_time) {
+void player_Update(Scene_t *scene, Thing_t *thing, float d_time) {
   if (play->key_up) {
     thing->vy = -500;
   }
@@ -48,7 +49,7 @@ void player_Update(Scene_t *scene, Thing *thing, float d_time) {
   }
 }
 
-void player_Update_render(Scene_t *scene, Thing *thing) {
+void player_Update_render(Scene_t *scene, Thing_t *thing) {
   if (thing == NULL || thing->poly == NULL) {
     return;
   }
@@ -63,11 +64,11 @@ void player_Update_render(Scene_t *scene, Thing *thing) {
   thing->poly->angle = target_angle;
 }
 
-void bullet_Update(Scene_t *scene, Thing *thing, float d_time) {}
+void bullet_Update(Scene_t *scene, Thing_t *thing, float d_time) {}
 
-void zombie_Update(Scene_t *scene, Thing *zombie, float d_time) {
+void zombie_Update(Scene_t *scene, Thing_t *zombie, float d_time) {
 
-  Thing *player = get(scene->things, 0);
+  Thing_t *player = get(scene->things, 0);
 
   float vx = player->x - zombie->x;
   float vy = player->y - zombie->y;
@@ -90,7 +91,7 @@ void zombie_Update(Scene_t *scene, Thing *zombie, float d_time) {
   }
 }
 
-void update_renderer(void *pgame, Thing *thing) {
+void update_renderer(void *pgame, Thing_t *thing) {
   switch (thing->type_id) {
   case PLAYER_TYPE:
     player_Update_render(pgame, thing);
@@ -98,7 +99,7 @@ void update_renderer(void *pgame, Thing *thing) {
   }
 }
 
-void update(void *pscene, Thing *thing, float d_time) {
+void update(void *pscene, Thing_t *thing, float d_time) {
 
   Scene_t *scene = (Scene_t *)pscene;
 
@@ -140,7 +141,7 @@ void spawn_player(Scene_t *scene) {
 
   // add player at index 0 to access easier
   // TODO need a more dynamic alternative
-  Thing *player =
+  Thing_t *player =
       add_thing(scene, 400, 300, 7, 7, 0.0f, 0.0f, PLAYER_TYPE, 255, 0, 0, 255);
 
   struct dynArray_t *vertices;

@@ -4,9 +4,9 @@
 #include <time.h>
 #include <unistd.h>
 
-Thing *malloc_Thing() {
+Thing_t *malloc_Thing() {
 
-  Thing *thing = malloc(sizeof(Thing));
+  Thing_t *thing = malloc(sizeof(Thing_t));
 
   if (thing == NULL) {
     return NULL;
@@ -58,7 +58,7 @@ void destroy_Scene(Scene_t *play) {
   }
 
   for (size_t i = 0; i < play->things->ptr; i++) {
-    Thing *thing = get(play->things, i);
+    Thing_t *thing = get(play->things, i);
     if (thing != NULL) {
       free(thing);
     }
@@ -119,10 +119,10 @@ void add_Scene_to_Play(Scene_t *scene, Play_t *play) {
   scene->scene_ID = play->scene_count++;
 }
 
-Thing *add_thing(Scene_t *scene, int x, int y, int width, int height, float vx,
+Thing_t *add_thing(Scene_t *scene, int x, int y, int width, int height, float vx,
                  float vy, int tid, int r, int g, int b, int a) {
 
-  Thing *thing = malloc_Thing();
+  Thing_t *thing = malloc_Thing();
 
   if (thing == NULL) {
     fprintf(stderr, "Failed to allocate memory for new Thing\n");
@@ -159,7 +159,7 @@ int destroy_Thing(Scene_t *scene, int thing_index) {
   // delete thing from index, swaps last element to its place then deletes
   delete_at(scene->things, thing_index);
   // update index of the moved thing (previously at end of array), to new index
-  Thing *moved_thing = get(scene->things, thing_index); //
+  Thing_t *moved_thing = get(scene->things, thing_index); //
   moved_thing->index = thing_index;
 
   return 0;
@@ -183,7 +183,7 @@ void render_things(Scene_t *scene, SDL_Renderer *renderer) {
   SDL_RenderClear(renderer);
   for (int i = 0; i < scene->things->ptr; i++) {
 
-    Thing *thing = get(scene->things, i);
+    Thing_t *thing = get(scene->things, i);
 
     if (thing == NULL || thing->id == -1) {
       continue;
@@ -218,12 +218,12 @@ void render_things(Scene_t *scene, SDL_Renderer *renderer) {
   SDL_RenderPresent(renderer);
 }
 
-int is_bounding_box_collision(Thing *a, Thing *b) {
+int is_bounding_box_collision(Thing_t *a, Thing_t *b) {
   return (a->x < b->x + b->width && a->x + a->width > b->x &&
           a->y < b->y + b->height && a->y + a->height > b->y);
 }
 
-float calculate_distance_things(Thing *a, Thing *b) {
+float calculate_distance_things(Thing_t *a, Thing_t *b) {
 
   float distance = -1;
 
@@ -239,7 +239,7 @@ void update_things(Scene_t *scene, float d_time) {
     aren't set to NULL
   */
   for (int i = 0; i < scene->things->ptr; i++) {
-    Thing *thing = get(scene->things, i);
+    Thing_t *thing = get(scene->things, i);
     thing->x += thing->vx * d_time;
     thing->y += thing->vy * d_time;
     if (scene->on_update) {
