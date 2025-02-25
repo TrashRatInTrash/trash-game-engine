@@ -22,7 +22,7 @@ int append(struct dynArray_t **varray, void *element);
 
 void *get(struct dynArray_t *varray, size_t index);
 
-void delete_at(struct dynArray_t *varray, size_t index);
+int delete_at(struct dynArray_t *varray, size_t index);
 
 void destroy_Array(struct dynArray_t *varray);
 

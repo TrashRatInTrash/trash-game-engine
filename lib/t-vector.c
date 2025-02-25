@@ -25,6 +25,7 @@ struct dynArray_t *resize_Array(struct dynArray_t *p_varray) {
   printf("resizing\n");
   size_t new_capacity = p_varray->capacity * RESIZE_CONSTANT;
 
+  printf("new capacity: %d\n", new_capacity);
   struct dynArray_t *n_varray = create_Array(new_capacity);
   if (n_varray == NULL) {
     printf("new array failed to create\n");
@@ -59,13 +60,14 @@ void *get(struct dynArray_t *varray, size_t index) {
   return varray->data[index];
 }
 
-void delete_at(struct dynArray_t *varray, size_t index) {
+int delete_at(struct dynArray_t *varray, size_t index) {
   if (index >= varray->ptr) {
-    return;
+    return -1;
   }
-
+  printf("ptr = %d\n", varray->ptr);
   varray->data[index] = varray->data[varray->ptr - 1];
   varray->ptr--;
+  return index;
 }
 
 void destroy_Array(struct dynArray_t *varray) {

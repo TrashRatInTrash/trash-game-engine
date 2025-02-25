@@ -11,6 +11,9 @@
 #include "lib/T-engine.h"
 #include "lib/t-vector.h"
 
+#define WIDTH 800
+#define HEIGHT 600
+
 #define PLAYER_TYPE 5
 #define BULLET_TYPE 6
 #define ZOMBIE_TYPE 7
@@ -26,6 +29,33 @@ void print_thing_ids(Scene_t *scene) {
       continue;
     }
     printf("x: %f \n", thing->x);
+  }
+}
+
+void shoot(Scene_t *scene, Thing_t *thing, int mouse_x, int mouse_y) {
+  float vx = mouse_x - thing->x;
+  float vy = mouse_y - thing->y;
+
+  normalize_Vector(&vx, &vy);
+
+  add_thing(scene, thing->x, thing->y, 2, 2, vx * 1000, vy * 1000, BULLET_TYPE,
+            250, 250, 250, 255);
+}
+
+void bullet_Update(Scene_t *scene, Thing_t *thing, float life) {
+
+  if (thing->x >= WIDTH - thing->width / 2.0f) {
+    destroy_Thing(scene, thing);
+  }
+  if (thing->x <= thing->width / 2.0f) {
+    destroy_Thing(scene, thing);
+  }
+
+  if (thing->y >= HEIGHT - thing->height / 2.0f) {
+    destroy_Thing(scene, thing);
+  }
+  if (thing->y <= thing->height / 2.0f) {
+    destroy_Thing(scene, thing);
   }
 }
 
@@ -47,6 +77,10 @@ void player_Update(Scene_t *scene, Thing_t *thing, float d_time) {
   } else {
     thing->vx /= 1.1;
   }
+
+  if (play->mouse_button_pressed) {
+    shoot(scene, thing, play->mouse_x, play->mouse_y);
+  }
 }
 
 void player_Update_render(Scene_t *scene, Thing_t *thing) {
@@ -63,8 +97,6 @@ void player_Update_render(Scene_t *scene, Thing_t *thing) {
 
   thing->poly->angle = target_angle;
 }
-
-void bullet_Update(Scene_t *scene, Thing_t *thing, float d_time) {}
 
 void zombie_Update(Scene_t *scene, Thing_t *zombie, float d_time) {
 
@@ -83,6 +115,7 @@ void zombie_Update(Scene_t *scene, Thing_t *zombie, float d_time) {
     zombie->color[0] = 255;
     if (is_bounding_box_collision(zombie, player)) {
       player->color[1] = 255;
+      destroy_Thing(scene, zombie);
     } else {
       player->color[1] = 0;
     }
@@ -119,22 +152,27 @@ void update(void *pscene, Thing_t *thing, float d_time) {
 void generate_zombie_coords(float *x, float *y) {
   if (rand() % 2 == 0) {
     // Left or right edge
-    *x = (rand() % 2 == 0) ? (rand() % 20) : (780 + rand() % 20);
-    *y = rand() % 600;
+    *x = (rand() % 2 == 0) ? (rand() % 20) : (WIDTH - 20 + rand() % 20);
+    *y = rand() % HEIGHT;
   } else {
     // Top or bottom edge
-    *x = rand() % 800;
-    *y = (rand() % 2 == 0) ? (rand() % 20) : (580 + rand() % 20);
+    *x = rand() % WIDTH;
+    *y = (rand() % 2 == 0) ? (rand() % 20) : (HEIGHT - 20 + rand() % 20);
   }
 }
 
 void spawn_zombies(Scene_t *scene) {
-  for (int i = 0; i < 5; i++) {
-    float x = 0;
-    float y = 0;
-    generate_zombie_coords(&x, &y);
-    add_thing(scene, x, y, 10, 10, 0.0f, 0.0f, ZOMBIE_TYPE, 255, 255, 0, 255);
-  }
+
+  add_thing(scene, 10, 300, 10, 10, 0.0f, 0.0f, ZOMBIE_TYPE, 255, 255, 0, 255);
+  add_thing(scene, 790, 300, 10, 10, 0.0f, 0.0f, ZOMBIE_TYPE, 255, 255, 0, 255);
+
+  // for (int i = 0; i < 5; i++) {
+  //   float x = 0;
+  //   float y = 0;
+  //   generate_zombie_coords(&x, &y);
+  //   add_thing(scene, x, y, 10, 10, 0.0f, 0.0f, ZOMBIE_TYPE, 255, 255, 0,
+  //   255);
+  // }
 }
 
 void spawn_player(Scene_t *scene) {
@@ -171,7 +209,7 @@ void init_scene(Scene_t *scene) {
 int main() {
 
   srand(time(NULL));
-  play = init_Play(800, 600);
+  play = init_Play(WIDTH, HEIGHT);
   if (play == NULL) {
     return 1;
   }

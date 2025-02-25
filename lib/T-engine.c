@@ -119,8 +119,8 @@ void add_Scene_to_Play(Scene_t *scene, Play_t *play) {
   scene->scene_ID = play->scene_count++;
 }
 
-Thing_t *add_thing(Scene_t *scene, int x, int y, int width, int height, float vx,
-                 float vy, int tid, int r, int g, int b, int a) {
+Thing_t *add_thing(Scene_t *scene, int x, int y, int width, int height,
+                   float vx, float vy, int tid, int r, int g, int b, int a) {
 
   Thing_t *thing = malloc_Thing();
 
@@ -146,21 +146,27 @@ Thing_t *add_thing(Scene_t *scene, int x, int y, int width, int height, float vx
   thing->color[1] = g;
   thing->color[2] = b;
   thing->color[3] = a;
-  thing->index = scene->things->ptr;
+  thing->index = scene->things->ptr - 1;
   // thing->poly = NULL;
 
   return thing;
 }
 
-int destroy_Thing(Scene_t *scene, int thing_index) {
+int destroy_Thing(Scene_t *scene, Thing_t *thing) {
+  printf("destroying Thing at index: %d\n", thing->index);
+  if (thing->index < 0 || thing->index >= scene->things->ptr) {
+    // invalid index
+    return -1;
+  }
 
-  printf("destroying Thing at index: %d\n", thing_index);
+  int index = delete_at(scene->things, thing->index);
 
-  // delete thing from index, swaps last element to its place then deletes
-  delete_at(scene->things, thing_index);
-  // update index of the moved thing (previously at end of array), to new index
-  Thing_t *moved_thing = get(scene->things, thing_index); //
-  moved_thing->index = thing_index;
+  Thing_t *moved_thing = get(scene->things, index);
+  if (!(moved_thing == NULL)) {
+    printf("moved from %d to %d\n", moved_thing->index, index);
+
+    moved_thing->index = index;
+  }
 
   return 0;
 }

@@ -72,7 +72,7 @@ void destroy_Scene(Scene_t *game);
 Play_t *init_Play(int Win_Width, int Win_Height);
 Thing_t *add_thing(Scene_t *game, int x, int y, int width, int height, float vx,
                    float vy, int tid, int r, int g, int b, int a);
-int destroy_Thing(Scene_t *scene, int thing_index);
+int destroy_Thing(Scene_t *scene, Thing_t *thing);
 void add_Scene_to_Play(Scene_t *scene, Play_t *play);
 
 void run_Play(Play_t *play);
