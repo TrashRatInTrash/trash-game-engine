@@ -87,14 +87,11 @@ void player_Update_render(Scene_t *scene, Thing_t *thing) {
   if (thing == NULL || thing->poly == NULL) {
     return;
   }
-
   double target_angle = get_angle_between_points(thing->x, thing->y,
                                                  play->mouse_x, play->mouse_y);
-
   double angle_diff = target_angle - thing->poly->angle;
 
   rotate_points(thing->poly, angle_diff);
-
   thing->poly->angle = target_angle;
 }
 
@@ -115,12 +112,25 @@ void zombie_Update(Scene_t *scene, Thing_t *zombie, float d_time) {
     zombie->color[0] = 255;
     if (is_bounding_box_collision(zombie, player)) {
       player->color[1] = 255;
-      destroy_Thing(scene, zombie);
     } else {
       player->color[1] = 0;
     }
   } else {
     zombie->color[0] = 0;
+  }
+
+  for (int i = 0; i < scene->things->ptr; i++) {
+    Thing_t *other = get(scene->things, i);
+    if (other == NULL) {
+      continue;
+    }
+    if (other->type_id == BULLET_TYPE) {
+      if (is_bounding_box_collision(zombie, other)) {
+        destroy_Thing(scene, zombie);
+        printf("killed zombie\n");
+        break;
+      }
+    }
   }
 }
 
@@ -163,16 +173,16 @@ void generate_zombie_coords(float *x, float *y) {
 
 void spawn_zombies(Scene_t *scene) {
 
-  add_thing(scene, 10, 300, 10, 10, 0.0f, 0.0f, ZOMBIE_TYPE, 255, 255, 0, 255);
-  add_thing(scene, 790, 300, 10, 10, 0.0f, 0.0f, ZOMBIE_TYPE, 255, 255, 0, 255);
+  // add_thing(scene, 10, 300, 10, 10, 0.0f, 0.0f, ZOMBIE_TYPE, 255, 255, 0,
+  // 255); add_thing(scene, 790, 300, 10, 10, 0.0f, 0.0f, ZOMBIE_TYPE, 255, 255,
+  // 0, 255);
 
-  // for (int i = 0; i < 5; i++) {
-  //   float x = 0;
-  //   float y = 0;
-  //   generate_zombie_coords(&x, &y);
-  //   add_thing(scene, x, y, 10, 10, 0.0f, 0.0f, ZOMBIE_TYPE, 255, 255, 0,
-  //   255);
-  // }
+  for (int i = 0; i < 5; i++) {
+    float x = 0;
+    float y = 0;
+    generate_zombie_coords(&x, &y);
+    add_thing(scene, x, y, 10, 10, 0.0f, 0.0f, ZOMBIE_TYPE, 255, 255, 0, 255);
+  }
 }
 
 void spawn_player(Scene_t *scene) {

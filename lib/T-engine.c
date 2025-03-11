@@ -71,6 +71,7 @@ void destroy_Scene(Scene_t *play) {
   initializes an empty Play
   with a window of heigh and width
 */
+
 Play_t *init_Play(int Win_Width, int Win_Height) {
 
   Play_t *play = malloc(sizeof(Play_t));
