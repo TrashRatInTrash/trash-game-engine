@@ -129,29 +129,24 @@ void boundary_Avoidance(Thing_t *bird) {
   float repulse_x = 0;
   float repulse_y = 0;
 
-  // Left boundary
   if (bird->x < BOUNDARY_MARGIN) {
     float factor = 1.0 - (bird->x / BOUNDARY_MARGIN);
     repulse_x += factor * BOUNDARY_REPULSION_STRENGTH;
   }
-  // Right boundary
   else if (bird->x > WIDTH - BOUNDARY_MARGIN) {
     float factor = (bird->x - (WIDTH - BOUNDARY_MARGIN)) / BOUNDARY_MARGIN;
     repulse_x -= factor * BOUNDARY_REPULSION_STRENGTH;
   }
 
-  // Top boundary
   if (bird->y < BOUNDARY_MARGIN) {
     float factor = 1.0 - (bird->y / BOUNDARY_MARGIN);
     repulse_y += factor * BOUNDARY_REPULSION_STRENGTH;
   }
-  // Bottom boundary
   else if (bird->y > HEIGHT - BOUNDARY_MARGIN) {
     float factor = (bird->y - (HEIGHT - BOUNDARY_MARGIN)) / BOUNDARY_MARGIN;
     repulse_y -= factor * BOUNDARY_REPULSION_STRENGTH;
   }
 
-  // Apply the repulsion force
   bird->vx += repulse_x;
   bird->vy += repulse_y;
 }
