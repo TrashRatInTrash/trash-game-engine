@@ -15,7 +15,7 @@ documentation can be found on my blog:
 
 ### Boids
 
-a boids implementation using the rules explained [here]([url](https://people.ece.cornell.edu/land/courses/ece4760/labs/s2021/Boids/Boids.html)). 
+a boids implementation using the rules explained [here](https://people.ece.cornell.edu/land/courses/ece4760/labs/s2021/Boids/Boids.html). 
 
 with an additional rule.
 
